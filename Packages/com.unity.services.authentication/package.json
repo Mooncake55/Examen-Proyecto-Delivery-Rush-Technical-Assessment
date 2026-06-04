@@ -1,0 +1,52 @@
+{
+  "name": "com.unity.services.authentication",
+  "displayName": "Authentication",
+  "version": "3.6.1",
+  "unity": "2021.3",
+  "description": "Client SDK offering player identity management for Unity Gaming Services.\n\nIdentity providers can be configured from the editor or the Unity Dashboard.\n\nPlayer management is available in the Unity Dashboard.",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.services.core": "1.15.1",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.ugui": "1.0.0"
+  },
+  "_upm": {
+    "gameService": {
+      "genericDashboardUrl": "https://cloud.unity3d.com/player-authentication",
+      "projectDashboardUrl": "https://cloud.unity3d.com/organizations/{0}/projects/{1}/player-authentication/about",
+      "projectDashboardUrlType": "OrganizationKeyAndProjectGuid",
+      "configurePath": "Project/Services/Authentication"
+    },
+    "supportedPlatforms": [
+      "Android",
+      "iOS",
+      "Linux",
+      "Mac",
+      "PC",
+      "WebGL",
+      "Windows 8 Universal",
+      "Windows 10 Universal"
+    ],
+    "changelog": "### Fixed\n- Fixed Player Accounts handling of deep links that are not part of an active sign-in."
+  },
+  "samples": [
+    {
+      "displayName": "UI Example",
+      "description": "Example scripts and UI elements demonstrating the Authentication package. This sample requires the com.unity.ugui package.",
+      "path": "Samples~"
+    }
+  ],
+  "relatedPackages": {
+    "com.unity.services.authentication.tests": "3.6.1"
+  },
+  "upmCi": {
+    "footprint": "bf89dbffdc9296b1eac6d793e339465567c18bc5"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.services.authentication@3.6/manual/index.html",
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/operate-services-sdk.git",
+    "type": "git",
+    "revision": "53161b768c8a4e7dcb2a609515d5ebf5aa303db9"
+  },
+  "_fingerprint": "1cdc3224fb13e5a49ee5c22cb26bcf8a87799c50"
+}
