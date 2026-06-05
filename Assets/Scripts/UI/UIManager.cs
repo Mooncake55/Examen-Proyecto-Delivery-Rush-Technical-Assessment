@@ -35,6 +35,8 @@ namespace DeliveryRushExam.UI
 
         private readonly List<OrderButtonView> orderViews = new List<OrderButtonView>();
 
+        private int lastTimerValue = -1;
+
         private void Awake()
         {
             if (gameManager == null)
@@ -57,6 +59,8 @@ namespace DeliveryRushExam.UI
         {
             orderManager.OrdersChanged += RefreshOrderList;
             scoreManager.OrderScored += ShowScorePopup;
+            // Suscribirse al evento
+            scoreManager.ScoreChanged += UpdateScoreUI;
         }
 
         private void OnDisable()
@@ -70,6 +74,11 @@ namespace DeliveryRushExam.UI
             {
                 scoreManager.OrderScored -= ShowScorePopup;
             }
+            // Suscribirse al evento
+            if (scoreManager != null)
+            {
+                scoreManager.ScoreChanged -= UpdateScoreUI;
+            }
         }
 
         private void Update()
@@ -79,21 +88,37 @@ namespace DeliveryRushExam.UI
                 return;
             }
 
-            scoreText.text = "Score: " + scoreManager.Score;
-            coinsText.text = "Coins: " + scoreManager.Coins;
-            timerText.text = "Time: " + Mathf.CeilToInt(gameManager.RemainingTime);
-            ordersCountText.text = "Orders: " + orderManager.ActiveOrders.Count;
+            // Primero obtengo el segundo actual redondeado
 
-            for (int i = 0; i < orderViews.Count; i++)
+            int currentSecond = Mathf.CeilToInt(gameManager.RemainingTime);
+
+            // Segundo actualizo la UI cada segundo y no en cada instancia de Update
+
+            if (currentSecond != lastTimerValue)
             {
+                timerText.text = "Time: " + currentSecond;
+                lastTimerValue = currentSecond;
+
+                for (int i = 0; i < orderViews.Count; i++)
+                {
                 orderViews[i].Refresh();
+                }
             }
 
-            Canvas canvas = GetComponentInParent<Canvas>();
+            // Cargar el Score en cada frame es innesceario, es mejor realizarlo unicamente cuando hay un cambio de score, time, order o coins
+
+            /* scoreText.text = "Score: " + scoreManager.Score;
+            coinsText.text = "Coins: " + scoreManager.Coins;
+            timerText.text = "Time: " + Mathf.CeilToInt(gameManager.RemainingTime);
+            ordersCountText.text = "Orders: " + orderManager.ActiveOrders.Count; */
+
+            // Cargar el Canva en cada frame sobrecarga el uso de la CPU
+
+            /*Canvas canvas = GetComponentInParent<Canvas>();
             if (canvas != null && ordersContainer != null)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ordersContainer);
-            }
+            }*/
         }
 
         public void ShowGameplay()
@@ -119,11 +144,14 @@ namespace DeliveryRushExam.UI
 
         private void RefreshOrderList()
         {
-            OrderManager runtimeOrderManager = FindFirstObjectByType<OrderManager>();
-            if (runtimeOrderManager != null)
+            // Es Redundante buscar al OrderManager en este metodo ya que el OrderManager es buscado en Awake
+
+            //OrderManager runtimeOrderManager = FindFirstObjectByType<OrderManager>();
+
+            /*if (runtimeOrderManager != null)
             {
                 orderManager = runtimeOrderManager;
-            }
+            }*/
 
             for (int i = 0; i < orderViews.Count; i++)
             {
@@ -140,6 +168,15 @@ namespace DeliveryRushExam.UI
                 view.Setup(orders[i], orderManager.CompleteOrder);
                 orderViews.Add(view);
             }
+
+            // Actualizar el Canva unicamente cuado se agregue o quite una orden es mas eficiente
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null && ordersContainer != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ordersContainer);
+            }
+
+            ordersCountText.text = "Orders: " + orderManager.ActiveOrders.Count;
         }
 
         private void ShowScorePopup(OrderData order)
@@ -148,6 +185,13 @@ namespace DeliveryRushExam.UI
             popup.gameObject.SetActive(true);
             popup.transform.localPosition = new Vector3(Random.Range(-90f, 90f), Random.Range(-25f, 35f), 0f);
             popup.Setup("+" + order.rewardPoints + " points");
+        }
+
+        // Método para actualizar el Score
+        private void UpdateScoreUI(int score, int coins, int completedOrders)
+        {
+            scoreText.text = "Score: " + score;
+            coinsText.text = "Coins: " + coins;
         }
     }
 }
