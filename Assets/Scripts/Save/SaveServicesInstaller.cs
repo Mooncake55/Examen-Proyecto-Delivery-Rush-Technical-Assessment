@@ -26,10 +26,7 @@ namespace DeliveryRushExam.Save
             }
 
             //ServiceLocator.Register(new UgsCloudSaveService());
-
-
-
-            // Registrar la interfaz para CloudSave
+            // Registrar la interfaz para Cloud 
             ServiceLocator.Register<ISaveService>(new UgsCloudSaveService());
         }
     }

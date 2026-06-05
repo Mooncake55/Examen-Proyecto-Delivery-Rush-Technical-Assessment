@@ -2491,7 +2491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ee4f0dd1f7b4e85b2d7270d9924248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeliveryRushExam.Save.SaveServicesInstaller
-  saveMode: 1
+  saveMode: 0
 --- !u!4 &2130748382
 Transform:
   m_ObjectHideFlags: 0

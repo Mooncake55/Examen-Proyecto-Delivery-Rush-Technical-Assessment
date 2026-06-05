@@ -16,7 +16,7 @@ namespace DeliveryRushExam.Save
         // Implementamos la Interfaz
         private ISaveService saveService;
 
-        private async void Awake()
+        private async void Start()
         {
             //localSaveService = new LocalSaveService();
 
@@ -32,9 +32,9 @@ namespace DeliveryRushExam.Save
             // Utiliza la interfaz
             CurrentProgress = await saveService.LoadAsync();
 
-            //  INYECCIÓN DE TESTING: Imprimimos los datos cargados en la consola
-            string loadedJson = JsonUtility.ToJson(CurrentProgress, true); // El 'true' lo formatea para que sea fácil de leer
-            Debug.Log("<color=cyan>--- DATOS CARGADOS DEL JUGADOR ---</color>\n" + loadedJson);
+            //  Verificar los datos
+            string loadedJson = JsonUtility.ToJson(CurrentProgress, true);
+            Debug.Log("Datos del Player" + loadedJson);
 
             ProgressLoaded?.Invoke(CurrentProgress);
         }
