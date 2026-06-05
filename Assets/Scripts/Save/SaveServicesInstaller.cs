@@ -18,11 +18,19 @@ namespace DeliveryRushExam.Save
             // El punto de extensión esperado es registrar una abstracción común.
             if (saveMode == SaveMode.Local)
             {
-                ServiceLocator.Register(new LocalSaveService());
+                //ServiceLocator.Register(new LocalSaveService());
+
+                // Registrar la Interfaz
+                ServiceLocator.Register<ISaveService>(new LocalSaveService());
                 return;
             }
 
-            ServiceLocator.Register(new UgsCloudSaveService());
+            //ServiceLocator.Register(new UgsCloudSaveService());
+
+
+
+            // Registrar la interfaz para CloudSave
+            ServiceLocator.Register<ISaveService>(new UgsCloudSaveService());
         }
     }
 }
