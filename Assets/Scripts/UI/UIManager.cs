@@ -37,6 +37,9 @@ namespace DeliveryRushExam.UI
 
         private int lastTimerValue = -1;
 
+       // Referencia a la Queue
+        private readonly Queue<ScorePopupView> popupQueue = new Queue<ScorePopupView>();
+
         private void Awake()
         {
             if (gameManager == null)
@@ -204,10 +207,26 @@ namespace DeliveryRushExam.UI
 
         private void ShowScorePopup(OrderData order)
         {
+            ScorePopupView popup;
+
+            // Buscar en la fila si hay alguno en queue
+            if (popupQueue.Count > 0)
+            {
+                popup = popupQueue.Dequeue();
+            }
+            else
+            {
+                popup = Instantiate(scorePopupPrefab, popupsContainer);
+            }
+            popup.transform.localPosition = new Vector3(Random.Range(-90f, 90f), Random.Range(-25f, 35f), 0f);
+            popup.Setup("+" + order.rewardPoints + " points", ReturnPopupToQueue);
+            popup.gameObject.SetActive(true);
+
+            /*
             ScorePopupView popup = Instantiate(scorePopupPrefab, popupsContainer);
             popup.gameObject.SetActive(true);
             popup.transform.localPosition = new Vector3(Random.Range(-90f, 90f), Random.Range(-25f, 35f), 0f);
-            popup.Setup("+" + order.rewardPoints + " points");
+            popup.Setup("+" + order.rewardPoints + " points");*/
         }
 
         // Método para actualizar el Score
@@ -215,6 +234,15 @@ namespace DeliveryRushExam.UI
         {
             scoreText.text = "Score: " + score;
             coinsText.text = "Coins: " + coins;
+        }
+
+
+        // Metodo para apagar el Popup
+
+        private void ReturnPopupToQueue(ScorePopupView popup)
+        {
+            popup.gameObject.SetActive(false); // Lo ocultamos
+            popupQueue.Enqueue(popup);         // Lo metemos al final de la fila
         }
     }
 }
