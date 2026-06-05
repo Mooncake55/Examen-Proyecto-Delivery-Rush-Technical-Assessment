@@ -28,6 +28,9 @@ namespace DeliveryRushExam.Core
         public IReadOnlyList<OrderData> ActiveOrders => activeOrders;
         public event Action OrdersChanged;
 
+        // Cantidad de Ordenes Expiradas
+        int expiredCount = 0;
+
         private void Awake()
         {
             if (scoreManager == null)
@@ -50,17 +53,36 @@ namespace DeliveryRushExam.Core
                 TrySpawnOrder();
             }
 
+            // Recorre la lista, cuando un timer llega a 0 añade avisa que una orden expiro
+            
+            bool ordersExpired = false;
+
             for (int i = activeOrders.Count - 1; i >= 0; i--)
             {
                 activeOrders[i].remainingTime -= Time.deltaTime;
+
+                if (activeOrders[i].remainingTime <= 0f)
+                {
+                    expiredCount++;
+                    activeOrders.RemoveAt(i);
+                    ordersExpired = true;
+                }
             }
             
-            int expiredCount = activeOrders.Where(order => order.remainingTime <= 0f).Count();
-            if (expiredCount > 0)
+            if (ordersExpired)
+            {
+                OrdersChanged?.Invoke();
+            }   
+
+            // Checkear cada frame la cantidad de Ordenes genera mucha basura que el Garbage Collector tendrá que limpiar
+            // haciendo un gran uso de la memoria de forma ineficiente
+
+            //int expiredCount = activeOrders.Where(order => order.remainingTime <= 0f).Count();
+            /*if (expiredCount > 0)
             {
                 activeOrders.RemoveAll(order => order.remainingTime <= 0f);
                 OrdersChanged?.Invoke();
-            }
+            }*/
 
             if (verboseLogs)
             {
@@ -91,7 +113,7 @@ namespace DeliveryRushExam.Core
             {
                 return;
             }
-
+                    
             activeOrders.Remove(order);
             scoreManager.AddCompletedOrder(order);
             OrdersChanged?.Invoke();

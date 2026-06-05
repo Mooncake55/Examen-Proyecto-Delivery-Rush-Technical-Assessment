@@ -93,6 +93,7 @@ namespace DeliveryRushExam.UI
             int currentSecond = Mathf.CeilToInt(gameManager.RemainingTime);
 
             // Segundo actualizo la UI cada segundo y no en cada instancia de Update
+            // Ahora 
 
             if (currentSecond != lastTimerValue)
             {
@@ -105,7 +106,7 @@ namespace DeliveryRushExam.UI
                 }
             }
 
-            // Cargar el Score en cada frame es innesceario, es mejor realizarlo unicamente cuando hay un cambio de score, time, order o coins
+            // Cargar el Score en cada frame es innecesario, es mejor realizarlo unicamente cuando hay un cambio de score, time, order o coins
 
             /* scoreText.text = "Score: " + scoreManager.Score;
             coinsText.text = "Coins: " + scoreManager.Coins;
@@ -153,21 +154,45 @@ namespace DeliveryRushExam.UI
                 orderManager = runtimeOrderManager;
             }*/
 
-            for (int i = 0; i < orderViews.Count; i++)
+            /*for (int i = 0; i < orderViews.Count; i++)
             {
                 Destroy(orderViews[i].gameObject);
-            }
-
-            orderViews.Clear();
-
-            IReadOnlyList<OrderData> orders = orderManager.ActiveOrders;
-            for (int i = 0; i < orders.Count; i++)
+            }*/
+            
+            /*for (int i = 0; i < orders.Count; i++)
             {
                 OrderButtonView view = Instantiate(orderButtonPrefab, ordersContainer);
                 view.gameObject.SetActive(true);
                 view.Setup(orders[i], orderManager.CompleteOrder);
                 orderViews.Add(view);
+            }*/
+
+            IReadOnlyList<OrderData> orders = orderManager.ActiveOrders;
+
+            // Agregar Nuevas Ordenes
+
+            while (orderViews.Count < orders.Count)
+            {
+                OrderButtonView newView = Instantiate(orderButtonPrefab, ordersContainer);
+                orderViews.Add(newView);
             }
+
+            // En vez de Eliminar las ordenes ahora solo las desactivo gastando mucho menos memoria
+            // Realizo Object Pooling Pre-instanciando los objetos del canva necesarios
+
+            for (int i = 0; i < orderViews.Count; i++)
+            {
+                if (i < orders.Count)
+                {
+                    orderViews[i].gameObject.SetActive(true);
+                    orderViews[i].Setup(orders[i], orderManager.CompleteOrder);
+                }
+                else
+                {
+                    orderViews[i].gameObject.SetActive(false);
+                }
+            }
+            ordersCountText.text = "Orders: " + orders.Count;
 
             // Actualizar el Canva unicamente cuado se agregue o quite una orden es mas eficiente
             Canvas canvas = GetComponentInParent<Canvas>();
@@ -175,8 +200,6 @@ namespace DeliveryRushExam.UI
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ordersContainer);
             }
-
-            ordersCountText.text = "Orders: " + orderManager.ActiveOrders.Count;
         }
 
         private void ShowScorePopup(OrderData order)
